@@ -1,0 +1,21 @@
+{
+  "name": "potato-bundler",
+  "version": "1.0.0",
+  "description": "Bundles your webpage to minimal possible format",
+  "main": "potato-bundler.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/marsgpl/potato-bundler.git"
+  },
+  "keywords": [
+    "potato"
+  ],
+  "author": "marsgpl",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/marsgpl/potato-bundler/issues"
+  },
+  "homepage": "https://github.com/marsgpl/potato-bundler#readme"
+}
