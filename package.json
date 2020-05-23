@@ -2,8 +2,10 @@
   "name": "potato-bundler",
   "version": "1.0.0",
   "description": "Bundles your webpage to minimal possible format",
-  "main": "potato-bundler.js",
-  "scripts": {
+  "main": "./potato-bundler",
+  "scripts": {},
+  "bin": {
+    "potato-bundler": "./potato-bundler"
   },
   "repository": {
     "type": "git",
