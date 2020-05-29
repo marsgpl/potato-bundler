@@ -18,9 +18,9 @@ Bundles your webapp to minimal possible format
 ## Usage
 
     npx potato-bundler --src=DIRECTORY --dst=DIRECTORY [--force-delete-dst] [--lang=FILE]
-        --src - directory with sources',
-        --dst - directory to store compressed bundle',
-        --force-delete-dst - delete dst directory if it exists',
+        --src - directory with sources
+        --dst - directory to store compressed bundle
+        --force-delete-dst - delete dst directory if it exists
         --lang - json file with translation, see ./example/src/lang.json
 
 ## Example
