@@ -20,7 +20,8 @@ const SELF_CLOSING_HTML_TAGS = {
     'wbr': true,
 };
 
-const cssUrlRegExp = /url\s*\(\s*'(.*?)'\s*\)|url\s*\(\s*"(.*?)"\s*\)|url\s*\(\s*(.*?)\s*\)/gi;
+const cssUrlExpr = /url\s*\(\s*'(.*?)'\s*\)|url\s*\(\s*"(.*?)"\s*\)|url\s*\(\s*(.*?)\s*\)/gi;
+const cssClassInJsExpr = /(var|let|const)[\s\n]+CSS_([a-z0-9_-]*)\s*=\s*['"](\.[a-z0-9_-]+)['"]/gis;
 
 class HtmlExtractor {
     static isSelfClosingTag(tag) {
@@ -85,7 +86,7 @@ class HtmlExtractor {
 
             if (name === 'class') {
                 value = value.split(' ').map(className =>
-                    classReplaceMap.associate(className)).join(' ');
+                    classReplaceMap.associate(className, 'html')).join(' ');
             }
 
             const needQuote = value.includes(' ');
@@ -226,12 +227,8 @@ class HtmlExtractor {
         fileRenameMap,
         fileSrcPath
     ) {
-        const fileName = path.basename(fileSrcPath);
-
-        if (fileName.toLowerCase() === 'css-classes.js') {
-            bundle = bundle.replace(/\s*=\s*['"](\.[a-z0-9_-]+)['"]/gi, (_, className) =>
-                `='${classReplaceMap.associate(className)}'`);
-        }
+        bundle = bundle.replace(cssClassInJsExpr, (_, declarator, varName, className) =>
+            `${declarator} CSS_${varName} = '${classReplaceMap.associate(className, 'js')}'`);
 
         return bundle;
     }
@@ -290,27 +287,34 @@ class HtmlExtractor {
         } else if (type === 'keyframe' || type === 'font-face') {
             run = run.concat(parsed.declarations);
         } else if (type === 'keyframes') {
+            parsed.name = classReplaceMap.associate(parsed.name, 'keyframe');
             run = run.concat(parsed.keyframes);
         } else if (type === 'page' || type === 'rule') {
             run = run.concat(parsed.declarations);
 
             parsed.selectors = parsed.selectors.map(selector =>
                 selector.split(/\s+/g).map(chunk =>
-                    chunk.replace(/^(\.[a-z0-9_-]+)/i, (_, className) =>
-                        classReplaceMap.associate(className))).join(' '));
+                    chunk.replace(/(\.[a-z0-9_-]+)/ig, (_, className) =>
+                        classReplaceMap.associate(className, 'css'))).join(' '));
         } else if (type === 'declaration') {
-            parsed.value = await replaceAsync(parsed.value, cssUrlRegExp, async m => {
-                let url = m[1] || m[2] || m[3];
-                const quote = url.includes(')') ? url.includes('"') ? '\'' : '"' : '';
+            if (parsed.property === 'animation') {
+                const parts = parsed.value.split(/[\s\n]+/g);
+                parts[0] = classReplaceMap.associate(parts[0], 'keyframe');
+                parsed.value = parts.join(' ');
+            } else {
+                parsed.value = await replaceAsync(parsed.value, cssUrlExpr, async m => {
+                    let url = m[1] || m[2] || m[3];
+                    const quote = url.includes(')') ? url.includes('"') ? '\'' : '"' : '';
 
-                if (!HtmlExtractor.isExternalLink(url)) {
-                    const fileSrcUrl = path.resolve(`${baseSrcDir}/${relativeDir}/${url}`);
-                    const substitute = await fileRenameMap.associate(fileSrcUrl, baseDstDir);
-                    url = substitute.name;
-                }
+                    if (!HtmlExtractor.isExternalLink(url)) {
+                        const fileSrcUrl = path.resolve(`${baseSrcDir}/${relativeDir}/${url}`);
+                        const substitute = await fileRenameMap.associate(fileSrcUrl, baseDstDir);
+                        url = substitute.name;
+                    }
 
-                return `url(${quote}${url}${quote})`;
-            });
+                    return `url(${quote}${url}${quote})`;
+                });
+            }
         }
 
         if (run.length > 0) {

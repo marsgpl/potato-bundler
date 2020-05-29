@@ -31,6 +31,26 @@ class PotatoBundler {
         await this.checkInitialSettings();
         await this.initLang();
         await this.bundleDir(this.src, this.dst);
+
+        this.checkCssClassesExistanceInHtmlAndJs();
+    }
+
+    checkCssClassesExistanceInHtmlAndJs() {
+        const { css, html, js } = this.classReplaceMap.existanceMap;
+
+        if (!css || !html) return;
+
+        const errors = [];
+
+        Object.keys(css).forEach(className => {
+            if (!html[className] && !js[className]) {
+                errors.push(`class name "${className}" exists only in styles`);
+            }
+        });
+
+        if (errors.length > 0) {
+            this.warning(errors);
+        }
     }
 
     async checkInitialSettings() {
@@ -76,8 +96,14 @@ class PotatoBundler {
     }
 
     fail(errors = []) {
-        console.error(`fail: ${errors.join(', ') || '?'}\n\n${USAGE}`);
+        console.error(`Fail: ${errors.join(', ') || '?'}\n\n${USAGE}`);
         process.exit(1);
+    }
+
+    warning(errors = []) {
+        if (!errors.length) return;
+
+        console.error(`Warning:\n    ${errors.join('\n    ')}`);
     }
 
     parseArgs(args) {
@@ -240,6 +266,14 @@ class PotatoBundler {
             const closureCompiler = new ClosureCompiler({
                 compilation_level: 'ADVANCED',
                 js: tmpFilePath,
+                env: 'BROWSER',
+                language_in: 'ECMASCRIPT_NEXT',
+                language_out: 'ECMASCRIPT5_STRICT',
+                warning_level: 'VERBOSE',
+                strict_mode_input: true,
+                formatting: 'SINGLE_QUOTES',
+                isolation_mode: 'NONE',
+                charset: 'UTF-8',
             });
 
             closureCompiler.run((exitCode, stdout, stderr) => {
