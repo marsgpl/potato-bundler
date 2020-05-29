@@ -2,4 +2,6 @@
 
 const PotatoBundler = require('./src/PotatoBundler');
 
-new PotatoBundler(process.argv);
+const pb = new PotatoBundler(process.argv);
+
+pb.start();

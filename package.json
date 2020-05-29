@@ -1,7 +1,7 @@
 {
   "name": "potato-bundler",
   "version": "1.0.2",
-  "description": "Bundles your webpage to minimal possible format",
+  "description": "Bundles your webapp to minimal possible format",
   "main": "./potato-bundler",
   "scripts": {},
   "bin": {
@@ -19,5 +19,12 @@
   "bugs": {
     "url": "https://github.com/marsgpl/potato-bundler/issues"
   },
-  "homepage": "https://github.com/marsgpl/potato-bundler#readme"
+  "homepage": "https://github.com/marsgpl/potato-bundler#readme",
+  "devDependencies": {},
+  "dependencies": {
+    "css": "^2.2.4",
+    "csso": "^4.0.3",
+    "google-closure-compiler": "^20200517.0.0",
+    "parse5": "^6.0.0"
+  }
 }
