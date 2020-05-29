@@ -1,0 +1,8 @@
+.princess-bubblegum-sticker {
+    display: block;
+    margin: 40px auto;
+    width: 200px;
+    height: 200px;
+    background: url('../img/PrincessBubblegum.png') no-repeat center / contain;
+    cursor: pointer;
+}

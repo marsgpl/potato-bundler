@@ -1,4 +1,6 @@
 {
-    "title": "Sample webapp",
-    "share_button_text": "Share"
+    "language": "en",
+    "title": "Potato Bundler",
+    "subtitle": "PB is for Princess Bubblegum, not for Potato Bundler",
+    "share": "Share!"
 }
