@@ -236,6 +236,7 @@ class PotatoBundler {
 
         bundle = csso.minify(bundle, {
             restructure: true,
+            forceMediaMerge: true,
             comments: false,
         }).css;
 
