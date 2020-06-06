@@ -190,7 +190,9 @@ class PotatoBundler {
 
     async bundleHtmlEntryPoint(src, dst) {
         const htmlSource = await FsFetch.file(src, this.fsCache);
-        const htmlRoot = parse5.parse(htmlSource);
+        const htmlCode = this.replaceLang(htmlSource, 'html');
+
+        const htmlRoot = parse5.parse(htmlCode);
         const baseSrcDir = path.dirname(src);
         const baseDstDir = path.dirname(dst);
 
@@ -221,7 +223,7 @@ class PotatoBundler {
 
         this.bundleHtml(htmlRoot, html, cssBundle, jsBundle);
 
-        const htmlBundle = this.replaceLang(html.join(''), 'html');
+        const htmlBundle = html.join('');
 
         await Fs.createDir(path.dirname(dst));
         await Fs.writeFile(dst, htmlBundle);
