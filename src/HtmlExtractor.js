@@ -21,7 +21,7 @@ const SELF_CLOSING_HTML_TAGS = {
 };
 
 const cssUrlExpr = /url\s*\(\s*'(.*?)'\s*\)|url\s*\(\s*"(.*?)"\s*\)|url\s*\(\s*(.*?)\s*\)/gi;
-const cssClassInJsExpr = /(var|let|const)[\s\n]+CSS_([a-z0-9_-]*)\s*=\s*['"](\.[a-z0-9_-]+)['"]/gis;
+const cssClassInJsExpr = /(var|let|const)[\s\n]+CSS_([a-z0-9_-]+)\s*=\s*['"](\.[a-z0-9_-]+)['"]/gis;
 
 class HtmlExtractor {
     static isSelfClosingTag(tag) {
@@ -217,6 +217,20 @@ class HtmlExtractor {
                     fileRenameMap);
             }
         }
+    }
+
+    static findDefinedButNotUsedCssClassConstsInJsBundle(bundle) {
+        const found = [];
+
+        for (const match of bundle.matchAll(cssClassInJsExpr)) {
+            const [ _,__,name ] = match;
+
+            if (bundle.match(new RegExp(`CSS_${name}`, 'g')).length === 1) {
+                found.push(name);
+            }
+        }
+
+        return found;
     }
 
     static async postprocessJs(

@@ -255,6 +255,12 @@ class PotatoBundler {
             ${bundle}
         })(window, document);`;
 
+        const found = HtmlExtractor.findDefinedButNotUsedCssClassConstsInJsBundle(bundle);
+
+        if (found.length > 0) {
+            this.fail([`css class consts [${found.join(',')}] are defined but not used`]);
+        }
+
         bundle = await this.compileJs(bundle);
 
         return bundle;
