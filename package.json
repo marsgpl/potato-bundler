@@ -1,6 +1,6 @@
 {
   "name": "potato-bundler",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Bundles your webapp to minimal possible format",
   "main": "./potato-bundler",
   "scripts": {},
