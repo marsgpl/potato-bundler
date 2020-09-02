@@ -17,6 +17,7 @@ const USAGE = [
     '    --force-delete-dst - delete dst directory if it exists',
     '    --lang - json file with translation, see ' +
         path.resolve(__dirname + '/../example/src/lang.json'),
+    '    --fast - do not compile js, fast bundling (for dev)'
 ].join('\n');
 
 class PotatoBundler {
@@ -123,6 +124,8 @@ class PotatoBundler {
                     this.langFile = value.startsWith('/') ? value : path.resolve('./' + value);
                 } else if (name === 'force-delete-dst') {
                     this.forceDeleteDst = true;
+                } else if (name === 'fast') {
+                    this.fast = true;
                 } else {
                     errors.push(`unsupported argument: "${arg}"`);
                 }
@@ -261,7 +264,9 @@ class PotatoBundler {
             this.fail([`css class consts [${found.join(',')}] are defined but not used`]);
         }
 
-        bundle = await this.compileJs(bundle);
+        if (!this.fast) {
+            bundle = await this.compileJs(bundle);
+        }
 
         return bundle;
     }
